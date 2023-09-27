@@ -1,0 +1,6 @@
+CityLearn==2.1b9
+numpy
+pandas
+matplotlib
+gymnasium
+stable_baselines3[extra]

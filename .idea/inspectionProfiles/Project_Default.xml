@@ -1,0 +1,50 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="DuplicatedCode" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <Languages>
+        <language minSize="93" name="Python" />
+      </Languages>
+    </inspection_tool>
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="15">
+            <item index="0" class="java.lang.String" itemvalue="geopandas" />
+            <item index="1" class="java.lang.String" itemvalue="pandas" />
+            <item index="2" class="java.lang.String" itemvalue="numpy" />
+            <item index="3" class="java.lang.String" itemvalue="slacker" />
+            <item index="4" class="java.lang.String" itemvalue="netcdftime" />
+            <item index="5" class="java.lang.String" itemvalue="cvxpy" />
+            <item index="6" class="java.lang.String" itemvalue="posix_ipc" />
+            <item index="7" class="java.lang.String" itemvalue="cvxopt" />
+            <item index="8" class="java.lang.String" itemvalue="mycolorpy" />
+            <item index="9" class="java.lang.String" itemvalue="ray" />
+            <item index="10" class="java.lang.String" itemvalue="cdsapi" />
+            <item index="11" class="java.lang.String" itemvalue="PseudoNetCDF" />
+            <item index="12" class="java.lang.String" itemvalue="gurobipy" />
+            <item index="13" class="java.lang.String" itemvalue="openpyxl" />
+            <item index="14" class="java.lang.String" itemvalue="pickle" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N806" />
+          <option value="N801" />
+          <option value="N802" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="GAMES.wp3_simulate.trip_sampler.wp3_simulate" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
