@@ -1,7 +1,6 @@
 import numpy as np
 import time
 import os
-
 from citylearn.citylearn import CityLearnEnv
 
 """
@@ -69,7 +68,7 @@ def evaluate(config):
     print("Env Created")
 
     agent = SubmissionAgent(wrapper_env)
-
+    print(SubmissionAgent)
     observations = env.reset()
 
     agent_time_elapsed = 0
@@ -99,7 +98,13 @@ def evaluate(config):
                 metrics_df = env.evaluate_citylearn_challenge()
                 episode_metrics.append(metrics_df)
                 print(f"Episode complete: {episodes_completed} | Latest episode metrics: {metrics_df}", )
-                
+
+                weighted_score = 0
+                for k in metrics_df.keys():
+                    if metrics_df[k]['weight'] is not None:
+                        weighted_score += metrics_df[k]['weight'] * metrics_df[k]['value']
+                print(f"Weighted score: {weighted_score}" )
+
                 # Optional: Uncomment line below to update power outage random seed 
                 # from what was initially defined in schema
                 env = update_power_outage_random_seed(env, 90000)
@@ -125,7 +130,7 @@ def evaluate(config):
         print("=========================Completed=========================")
 
     print(f"Total time taken by agent: {agent_time_elapsed}s")
-    
+
 
 if __name__ == '__main__':
     class Config:
