@@ -4,7 +4,7 @@ from citylearn.agents.rbc import BasicRBC
 class PPO_comfort_agent:
     """ Can be any subclass of citylearn.agents.base.Agent """
     def __init__(self, env):
-        self.agent_load_dir = './agents/models/'
+        self.agent_load_dir = './models/'
         self.agent_load_name = 'PPO_citylearn2023_comfort_5M'
         self.policy = PPO.load(self.agent_load_dir + self.agent_load_name).policy
         self.exploit = True
@@ -21,7 +21,7 @@ class PPO_comfort_agent:
 class PPO_mix_agent:
     """ Can be any subclass of citylearn.agents.base.Agent """
     def __init__(self, env):
-        self.agent_load_dir = './agents/models/'
+        self.agent_load_dir = './models/'
         self.agent_load_name = 'PPO_citylearn2023_mixed_reward'
         self.policy = PPO.load(self.agent_load_dir + self.agent_load_name).policy
         self.exploit = True
@@ -37,7 +37,7 @@ class PPO_mix_agent:
 class PPO_mix_agent_530:
     """ Can be any subclass of citylearn.agents.base.Agent """
     def __init__(self, env):
-        self.agent_load_dir = './agents/models/'
+        self.agent_load_dir = './models/'
         self.agent_load_name = 'PPO_citylearn2023_mixed_reward_530k'
         self.policy = PPO.load(self.agent_load_dir + self.agent_load_name).policy
         self.exploit = True
