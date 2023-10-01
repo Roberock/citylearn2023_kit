@@ -2,7 +2,6 @@ from citylearn.agents.rbc import BasicRBC
 from citylearn.agents.rbc import OptimizedRBC
 
 
-
 class BasicRBCAgent(BasicRBC):
     """ Can be any subclass of citylearn.agents.base.Agent """
     def __init__(self, env):

@@ -8,9 +8,15 @@ This is only a reference script provided to allow you
 to do local evaluation. The evaluator **DOES NOT** 
 use this script for orchestrating the evaluations. 
 """
-
 from agents.user_agent import SubmissionAgent
 from rewards.user_reward import SubmissionReward
+
+
+# ANSI escape code for colored text
+blue_color_code = "\033[94m"
+green_color_code = "\033[92m"
+# Reset ANSI escape code to default color
+reset_color_code = "\033[0m"
 
 class WrapperEnv:
     """
@@ -103,7 +109,8 @@ def evaluate(config):
                 for k in metrics_df.keys():
                     if metrics_df[k]['weight'] is not None:
                         weighted_score += metrics_df[k]['weight'] * metrics_df[k]['value']
-                print(f"Weighted score: {weighted_score}" )
+                        print(f"{green_color_code}{k}{reset_color_code}, {metrics_df[k]['value']}")
+                print(f"{blue_color_code}Average weighted score: {weighted_score}{reset_color_code}")
 
                 # Optional: Uncomment line below to update power outage random seed 
                 # from what was initially defined in schema

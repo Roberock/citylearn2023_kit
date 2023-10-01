@@ -12,6 +12,7 @@ from stable_baselines3.common.utils import set_random_seed
 from local_evaluation import WrapperEnv, create_citylearn_env
 import gymnasium
 from gymnasium import spaces
+from gymnasium.wrappers import TransformObservation, FrameStack
 
 class Config:
     data_dir = './data/'
@@ -44,9 +45,13 @@ class CityLearnWrapper(gymnasium.Env):
         self.env = CityLearnEnv(conf.SCHEMA, reward_function=reward_fun)
         obs_env = self.env.observation_space[0]
         act_env = self.env.action_space[0]
+
+        olow = np.append(1, obs_env.low)
+        ohigh = np.append(168, obs_env.high)
+        new_shape = (obs_env.shape[0] + 1,)
         # Define observation space and action space based on your CityLearnEnv
-        self.observation_space = spaces.Box(low=obs_env.low, high=obs_env.high,
-                                            shape=obs_env.shape, dtype=np.float32)
+        self.observation_space = spaces.Box(low=olow, high=ohigh,
+                                            shape=new_shape, dtype=np.float32)
 
         self.action_space = spaces.Box(low=act_env.low, high=act_env.high,
                                        shape=act_env.shape,  dtype=np.float32)
@@ -56,6 +61,9 @@ class CityLearnWrapper(gymnasium.Env):
     def step(self, action):
         # Take a step in the CityLearnEnv with the given action
         obs, reward, done, info = self.env.step([action])
+
+        hour_week = (obs[0][0]-1)*24+obs[0][1]
+        obs = [hour_week] + obs[0]
         # todo:
         #  1) add hour_of_week_feature (day-1)*24 + hour
         #  2) remove constant observations (screening, feature importance, etc)
@@ -65,7 +73,7 @@ class CityLearnWrapper(gymnasium.Env):
         #  collect rewards r_t(a=zeros)....load within the wrapper and normalize
 
         truncate = False
-        return obs[0], reward[0], done, truncate, info
+        return obs, reward[0], done, truncate, info
 
     def render(self, mode='human'):
         # Implement rendering if applicable
@@ -74,8 +82,10 @@ class CityLearnWrapper(gymnasium.Env):
     def reset(self, seed=None, options=None):
         # Reset the CityLearnEnv and return the initial observation
         obs_list = self.env.reset()
+        hour_week = (obs_list[0][0]-1)*24+obs_list[0][1]
+        obs_list = [hour_week] + obs_list[0]
         info = self.env.get_info()
-        return obs_list[0], info
+        return obs_list, info
 
     def close(self):
         # Implement any necessary cleanup
@@ -89,7 +99,7 @@ if __name__ == '__main__':
     # prepare directories
     model_out_dir = './agents/models/'
     tens_br_dir = "./tensorboard_log"
-    model_name = 'PPO_citylearn2023_mixed_reward'
+    model_name = 'PPO_citylearn2023_mix_week_hour_feature'
 
     if not os.path.exists(model_out_dir):
         os.makedirs(model_out_dir)
@@ -104,7 +114,7 @@ if __name__ == '__main__':
 
     env = CityLearnWrapper(conf=config, reward_fun=reward_function)
     env.reset()
-
+    # env = FrameStack(env, 4)
     try:  # if it exist, load te RL model
         print(' --- Loading saved model, ' + model_name)
         model = PPO.load(model_out_dir + model_name, env)
@@ -115,7 +125,7 @@ if __name__ == '__main__':
                     tensorboard_log=tens_br_dir,
                     n_steps=2_000, batch_size=200,  verbose=1, learning_rate=0.0005)
     print(' --- START the training')
-    model.learn(total_timesteps=100_0000,
+    model.learn(total_timesteps=500_0000,
                 tb_log_name=model_name) #, callback=eval_callback
     print(' --- SAVING MODEL --')
     model.save(model_out_dir + model_name)
