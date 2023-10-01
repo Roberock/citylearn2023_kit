@@ -1,8 +1,8 @@
 {
-  "challenge_id": "control-track-citylearn-challenge",
-  "authors": [
-    "aicrowd-bot"
-  ],
-  "description": "(optional) description about your awesome agent"
+  "challenge_id" : "control-track-citylearn-challenge",
+  "grader_id": "control-track-citylearn-challenge",
+  "authors" : ["roberto_rocchetta"],
+  "description" : "Control Track: PPO comfort controller",
+  "debug" : false
 }
 
