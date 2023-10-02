@@ -1,8 +1,8 @@
 {
   "challenge_id" : "control-track-citylearn-challenge",
+  "grader_id": "control-track-citylearn-challenge",
   "authors" : ["roberto_rocchetta"],
   "description" : "Control Track: PPO comfort controller",
-  "debug" : true
+  "debug" : false
 }
-
 

@@ -125,10 +125,10 @@ if __name__ == '__main__':
                     tensorboard_log=tens_br_dir,
                     n_steps=2_000, batch_size=200,  verbose=1, learning_rate=0.0005)
     print(' --- START the training')
-    model.learn(total_timesteps=500_0000,
+    model.learn(total_timesteps=100_0000,
                 tb_log_name=model_name) #, callback=eval_callback
     print(' --- SAVING MODEL --')
-    model.save(model_out_dir + model_name)
+    model.save(model_out_dir + model_name + 'v0.2')
     print(' --- END the training')
 
     # prepare vectorized environment
