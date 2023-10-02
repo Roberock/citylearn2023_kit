@@ -6,6 +6,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from rewards.user_reward import SubmissionReward
 from local_evaluation import create_citylearn_env
+from scipy.optimize import minimize, differential_evolution
+
+
 # ANSI escape code for colored text
 blue_color_code = "\033[94m"
 green_color_code = "\033[92m"
@@ -16,12 +19,58 @@ if __name__ == '__main__':
     class Config:
         data_dir = './data/'
         SCHEMA = os.path.join(data_dir, 'schemas/warm_up/schema.json')
-        num_episodes = 2
+        num_episodes = 1
 
 
     config = Config()
 
     env, wrapper_env = create_citylearn_env(config, SubmissionReward)
+
+
+
+    # Define the objective function
+    n_h = 168  # hours in a week
+    n_act = 3  # actions per buildings
+    n_obs = 1  # observations per buildings
+    n_buildings = 3
+    def objective_function(x):
+        total_negative_episodic_reward = 0
+        env.reset()
+        actions = x.reshape((n_h, n_act))
+        done = False
+        while not done:
+            hour_of_the_week = 24 * (env.observations[0][0] - 1) + env.observations[0][1]
+            # take action according to the hour of the week
+            action_hour_week = actions[hour_of_the_week-1, :]
+            # Perform the action and collect the observation, reward, and done flag
+            actions_all_buildings = [np.hstack([action_hour_week for b in range(n_buildings)],dtype='float32')]
+            _, rew, done, _ = env.step(actions_all_buildings)
+            total_negative_episodic_reward -= rew[0]
+
+        print(f"{green_color_code}{'sum episode reward '}{reset_color_code}, {-total_negative_episodic_reward}")
+        return total_negative_episodic_reward
+
+
+    # Assuming you have defined lower_bounds_table and upper_bounds_table as 2D arrays
+    lower_bounds_table = np.array([env.action_space[0].low[-3:] for _ in range(n_h)])
+    upper_bounds_table = np.array([env.action_space[0].high[-3:] for _ in range(n_h)])
+    bounds = [(lower_bounds_table[hour, i], upper_bounds_table[hour, i]) for hour in range(n_h) for i in range(n_act)]
+
+    # from pyomo.environ import *
+
+
+    # Define the optimization problem
+    """result = minimize(
+        objective_function,  # Minimize the negative of the objective function (to maximize)
+        x0=np.zeros((n_h, 9)).flatten(),
+        bounds=bounds)"""
+
+    result = differential_evolution(objective_function, bounds,  x0=np.zeros((n_h, n_act)).flatten())
+
+    # Extract the optimal actions
+    optimal_actions = result.x
+
+
 
 
     # Initialize empty lists to store data
@@ -65,7 +114,7 @@ if __name__ == '__main__':
     # Concatenate the DataFrames horizontally (column-wise)
     concatenated_df = pd.concat([obs_df, act_df, df_rew], axis=1)
     # Optionally, you can save the DataFrame to a CSV file
-    concatenated_df.to_csv('episodies_data.csv', index=False)
+    # concatenated_df.to_csv('episodies_data.csv', index=False)
 
 
     # Define a function to perform Min-Max scaling
@@ -89,41 +138,3 @@ if __name__ == '__main__':
 
     plt.show()"""
 
-
-    # Define the objective function
-    n_h = 168
-    def objective_function(x):
-        total_negative_episodic_reward = 0
-        env.reset()
-        actions = x.reshape((n_h, 9))
-        done = False
-        while not done:
-            hour_of_the_week = 24 * (env.observations[0][0] - 1) + env.observations[0][1]
-            # take action according to the hour of the week
-            action_hour_week = actions[hour_of_the_week-1, :]
-            # Perform the action and collect the observation, reward, and done flag
-            _, rew, done, _ = env.step([action_hour_week])
-            total_negative_episodic_reward -= rew[0]
-
-        print(f"{green_color_code}{'sum episode reward '}{reset_color_code}, {-total_negative_episodic_reward}")
-        return total_negative_episodic_reward
-
-
-    from scipy.optimize import minimize
-
-    # Assuming you have defined lower_bounds_table and upper_bounds_table as 2D arrays
-    lower_bounds_table = np.array([env.action_space[0].low for _ in range(n_h)])
-    upper_bounds_table = np.array([env.action_space[0].high for _ in range(n_h)])
-    bounds = [(lower_bounds_table[hour, i], upper_bounds_table[hour, i]) for hour in range(n_h) for i in range(9)]
-
-    # from pyomo.environ import *
-
-
-    # Define the optimization problem
-    result = minimize(
-        objective_function,  # Minimize the negative of the objective function (to maximize)
-        x0=np.zeros((n_h, 9)).flatten(),
-        bounds=bounds)
-
-    # Extract the optimal actions
-    optimal_actions = result.x

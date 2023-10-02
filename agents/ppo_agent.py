@@ -1,7 +1,7 @@
 from stable_baselines3 import PPO
 from citylearn.agents.rbc import BasicRBC, Agent
 import pickle as pkl
-
+import numpy as np
 # agent_name = 'PPO_citylearn2023_comfort_5M'
 agent_name = 'PPO_citylearn2023_mixed_reward'
 # agent_name = 'PPO_citylearn2023_mixed_reward_530k'
@@ -18,11 +18,12 @@ class PPO_agent_v0(Agent):
 
     def register_reset(self, observations):
         """ Register reset needs the first set of actions after reset """
+        self.reset()
         return self.predict(observations)
 
-    def predict(self, obs):
+    def predict(self, observations):
         """ Just a passthrough, can implement any custom logic as needed """
-        return self.policy.predict(obs[0], deterministic=self.exploit)
+        return self.policy.predict(observations[0], deterministic=self.exploit)
 
 
 
@@ -37,6 +38,7 @@ class PPO_agent_v2(Agent):
 
     def register_reset(self, observations):
         """ Register reset needs the first set of actions after reset """
+        self.reset()
         return self.predict(observations)
 
     def predict(self, observations):
@@ -63,11 +65,20 @@ class PPO_agent_pickle(Agent):
 
     def register_reset(self, observations):
         """ Register reset needs the first set of actions after reset """
+        self.reset()
         return self.predict(observations)
 
     def predict(self, observations):
         """ Just a passthrough, can implement any custom logic as needed """
-
+        n_buildings = len(self.env.buildings_metadata)
         hour_week = (observations[0][0]-1)*24+observations[0][1]
         obs = [hour_week] + observations[0]
-        return self.policy.predict(obs, deterministic=self.exploit)
+        if n_buildings == 3:
+            return self.policy.predict(obs, deterministic=self.exploit)
+        elif n_buildings == 6:
+            obs_3_shared = obs[:19]
+            obs_3_public = obs[19:19+11*3]
+            obs_3_private = obs[19+11*3:]
+            a_pub = self.policy.predict(obs_3_shared+obs_3_public, deterministic=self.exploit)
+            a_priv = self.policy.predict(obs_3_shared + obs_3_private, deterministic=self.exploit)
+            return (np.hstack([a_pub[0],a_priv[0]]), None)
