@@ -1,14 +1,11 @@
 from agents.rbc_agents import BasicRBCAgent, OptimizedRBC
-from agents.ppo_agent import (PPO_comfort_agent, PPO_mix_agent_530, PPO_mix_agent, PPO_mix_agent_week_hour_feature, PPO_mix_agent_week_hour_feature_v02)
+from agents.ppo_agent import (PPO_agent_v0, PPO_agent_v2, PPO_agent_pickle)
 
 ###################################################################
 #####                Specify your agent here                  #####
 ###################################################################
 
 # SubmissionAgent = BasicRBCAgent
-
-# SubmissionAgent = PPO_comfort_agent
-# SubmissionAgent = PPO_mix_agent
-# SubmissionAgent = PPO_mix_agent_530
-# SubmissionAgent = PPO_mix_agent_week_hour_feature
-SubmissionAgent = PPO_mix_agent_week_hour_feature_v02
+# SubmissionAgent = PPO_agent_v0
+# SubmissionAgent = PPO_agent_v2
+SubmissionAgent = PPO_agent_pickle
